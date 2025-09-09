@@ -60,5 +60,4 @@ function GarbageItemService.RemoveFromGarbage(itemName: string)
     end
 end
 
-
 return GarbageItemService
