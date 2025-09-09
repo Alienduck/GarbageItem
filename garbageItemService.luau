@@ -1,8 +1,32 @@
+--[[
+    Made by Alienduck, 2025-09-09
+    GarbageItemService
+    Service for managing garbage items in the game.
+    Example usage:
+    If you make rain with BasePart named "RainDrop":
+        local rainDrop = GarbageItemService.Clone("RainDrop")
+        rainDrop.Position = Vector3.new(0, 50, 0)
+        rainDrop.Parent = workspace
+        task.wait(5)
+        GarbageItemService.AddInGarbage(rainDrop) -- Move to Garbage folder
+        -- or
+        GarbageItemService.RemoveFromGarbage("RainDrop") -- Remove from Garbage folder
+    
+    What it does:
+    - Clones items from the Garbage folder or ReplicatedStorage if not found in Garbage.
+    - Adds items to the Garbage folder.
+    - Removes items from the Garbage folder.
+
+    What is this for ?
+    - To avoid cluttering ReplicatedStorage with unused items.
+    - To reuse items without having to recreate them from scratch.
+    - To manage memory usage by keeping unused items in a separate folder.
+]]
+
 -- Services
 local ReplicatedStorage: ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- Modules
-local Utility = require(ReplicatedStorage.ModuleScripts:WaitForChild("Utility"))
 
 -- Class
 local GarbageItemService = {}
@@ -18,6 +42,16 @@ end
 --========================================================
 -- HELPERS
 --========================================================
+
+local function GetChildrenByName(instance: Instance, name: string)
+	local childs: {Instance} = {}
+	for _, child: Instance in ipairs(instance:GetChildren()) do
+		if child.Name == name then
+			table.insert(childs, child)
+		end
+	end
+	return childs
+end
 
 --========================================================
 -- METHODS
@@ -54,7 +88,7 @@ end
     @param itemName (string): The name of the item to remove from the Garbage folder.
 ]]
 function GarbageItemService.RemoveFromGarbage(itemName: string)
-    local items: {Instance} = Utility:GetChildrenByName(GarbageFolder, itemName)
+    local items: {Instance} = GetChildrenByName(GarbageFolder, itemName)
     for _, item: Instance in ipairs(items) do
         item:Destroy()
     end
