@@ -20,3 +20,8 @@ out/
 
 # Useless toml
 selene.toml
+
+# Lock files
+/*.lock
+/*.rbxl.lock
+/*.rbxlx.lock
