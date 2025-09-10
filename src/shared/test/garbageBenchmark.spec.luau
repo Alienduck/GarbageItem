@@ -2,7 +2,7 @@
 
 return function()
     local ReplicatedStorage = game:GetService("ReplicatedStorage")
-    local GarbageItemService = require(ReplicatedStorage.Shared.garbageItemService)
+    local GarbageItemService = require(ReplicatedStorage.Shared.GarbageItemService)
 
     describe("Benchmark GarbageItemService vs Destroy", function()
         beforeAll(function()
