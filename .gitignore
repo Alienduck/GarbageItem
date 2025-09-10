@@ -25,3 +25,8 @@ selene.toml
 /*.lock
 /*.rbxl.lock
 /*.rbxlx.lock
+
+# Packages
+ServerPackages/
+Packages/
+sourcemap.json
