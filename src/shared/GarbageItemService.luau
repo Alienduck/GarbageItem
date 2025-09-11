@@ -31,6 +31,9 @@ local ReplicatedStorage: ReplicatedStorage = game:GetService("ReplicatedStorage"
 -- Class
 local GarbageItemService = {}
 
+-- Variables
+local tracked: {[Instance]: thread} = {}
+
 -- Create Garbage Folder
 local GarbageFolder = ReplicatedStorage:FindFirstChild("Garbage")
 if not GarbageFolder then
@@ -53,33 +56,64 @@ local function GetChildrenByName(instance: Instance, name: string)
 	return childs
 end
 
+-- Ajoute un objet avec un délai avant suppression
+local function DebrisAdd(instance: Instance, lifetime: number)
+	if not instance then return end
+
+	-- Si déjà tracké, on annule l'ancien timer
+	if tracked[instance] then
+		task.cancel(tracked[instance])
+	end
+
+	-- Nouveau timer
+	tracked[instance] = task.delay(lifetime, function()
+		if instance and instance.Parent then
+			instance:Destroy()
+		end
+		tracked[instance] = nil
+	end)
+end
+
+-- Annule la suppression prévue
+local function DebrisCancel(instance: Instance)
+	if tracked[instance] then
+		task.cancel(tracked[instance])
+		tracked[instance] = nil
+	end
+end
+
 --========================================================
 -- METHODS
 --========================================================
 
 --[[
     Clones an item from the Garbage folder or ReplicatedStorage if not found in Garbage.
-    @param itemName (string): The name of the item to clone.
+    @param itemName (string): The name of the item to clone | itemsFolder (Folder?): The folder to search in.
     @return (Instance | nil): The cloned item or nil if not found.
 ]]
-function GarbageItemService.Clone(itemName: string): Instance | nil
+function GarbageItemService.Clone(itemName: string, itemsFolder: Folder?): Instance | nil
     local itemsInstance: Instance? = GarbageFolder:FindFirstChild(itemName)
     if not itemsInstance then
-        itemsInstance = ReplicatedStorage:FindFirstChild(itemName)
+        itemsInstance = itemsFolder and itemsFolder:FindFirstChild(itemName) or ReplicatedStorage:FindFirstChild(itemName)
         if itemsInstance then
             return itemsInstance:Clone()
         end
+    else
+        DebrisCancel(itemsInstance)
     end
     return itemsInstance
 end
 
 --[[
     Adds an item to the Garbage folder.
-    @param item (Instance): The item to add to the Garbage folder.
+    @param item (Instance): The item to add to the Garbage folder | timeLimit (number): The time limit before the item is removed.
 ]]
-function GarbageItemService.AddInGarbage(item: Instance)
+function GarbageItemService.AddInGarbage(item: Instance, timeLimit: number?)
     if item and item.Parent ~= GarbageFolder then
         item.Parent = GarbageFolder
+    end
+    if timeLimit then
+        DebrisAdd(item, timeLimit)
     end
 end
 
