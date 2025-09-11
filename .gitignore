@@ -30,3 +30,7 @@ selene.toml
 ServerPackages/
 Packages/
 sourcemap.json
+
+# Jsons
+luals.json
+luau-lsp.json
