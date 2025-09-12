@@ -22,6 +22,14 @@ return function()
             base.Parent = ReplicatedStorage
         end)
 
+        local GarbageItemService
+        beforeEach(function()
+            GarbageItemService = require(ReplicatedStorage.Shared.GarbageItemService)
+            if GarbageItemService._resetForTests then
+                GarbageItemService._resetForTests()
+            end
+        end)
+
         local ITERATIONS = 1000
 
         it("benchmark Destroy direct", function()
