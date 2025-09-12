@@ -5,6 +5,7 @@ return function()
     local GarbageItemService = require(ReplicatedStorage.Shared.GarbageItemService)
 
     describe("GarbageItemService", function()
+        local GarbageItemService
         beforeEach(function()
             -- Nettoyer ReplicatedStorage et Garbage avant chaque test
             if ReplicatedStorage:FindFirstChild("Garbage") then
@@ -13,6 +14,12 @@ return function()
             local folder = Instance.new("Folder")
             folder.Name = "Garbage"
             folder.Parent = ReplicatedStorage
+
+            -- Recharger le module pour réinitialiser son état
+            GarbageItemService = require(ReplicatedStorage.Shared.GarbageItemService)
+            if GarbageItemService._resetForTests then
+                GarbageItemService._resetForTests()
+            end
         end)
 
         it("clones from ReplicatedStorage when not in Garbage", function()
