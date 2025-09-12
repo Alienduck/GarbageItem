@@ -46,6 +46,7 @@ end
 -- HELPERS
 --========================================================
 
+-- Récupère tous les enfants d'un instance avec un nom spécifique
 local function GetChildrenByName(instance: Instance, name: string)
 	local childs: {Instance} = {}
 	for _, child: Instance in ipairs(instance:GetChildren()) do
@@ -54,6 +55,19 @@ local function GetChildrenByName(instance: Instance, name: string)
 		end
 	end
 	return childs
+end
+
+-- Récupère (ou crée) le dossier Garbage dans ReplicatedStorage
+local function getGarbageFolder(): Folder
+    if not GarbageFolder or GarbageFolder.Parent ~= ReplicatedStorage then
+        GarbageFolder = ReplicatedStorage:FindFirstChild("Garbage")
+        if not GarbageFolder then
+            GarbageFolder = Instance.new("Folder")
+            GarbageFolder.Name = "Garbage"
+            GarbageFolder.Parent = ReplicatedStorage
+        end
+    end
+    return GarbageFolder
 end
 
 -- Ajoute un objet avec un délai avant suppression
@@ -92,7 +106,8 @@ end
     @return (Instance | nil): The cloned item or nil if not found.
 ]]
 function GarbageItemService.Clone(itemName: string, itemsFolder: Folder?): Instance | nil
-    local itemsInstance: Instance? = GarbageFolder:FindFirstChild(itemName)
+    local gf = getGarbageFolder()
+    local itemsInstance: Instance? = gf:FindFirstChild(itemName)
     if not itemsInstance then
         itemsInstance = itemsFolder and itemsFolder:FindFirstChild(itemName) or ReplicatedStorage:FindFirstChild(itemName)
         if itemsInstance then
@@ -109,8 +124,8 @@ end
     @param item (Instance): The item to add to the Garbage folder | timeLimit (number): The time limit before the item is removed.
 ]]
 function GarbageItemService.AddInGarbage(item: Instance, timeLimit: number?)
-    if item and item.Parent ~= GarbageFolder then
-        item.Parent = GarbageFolder
+    if item and item.Parent ~= getGarbageFolder() then
+        item.Parent = getGarbageFolder()
     end
     if timeLimit then
         DebrisAdd(item, timeLimit)
@@ -122,7 +137,8 @@ end
     @param itemName (string): The name of the item to remove from the Garbage folder.
 ]]
 function GarbageItemService.RemoveFromGarbage(itemName: string)
-    local items: {Instance} = GetChildrenByName(GarbageFolder, itemName)
+    local gf = getGarbageFolder()
+    local items: {Instance} = GetChildrenByName(gf, itemName)
     for _, item: Instance in ipairs(items) do
         item:Destroy()
     end
