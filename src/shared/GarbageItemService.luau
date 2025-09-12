@@ -128,4 +128,17 @@ function GarbageItemService.RemoveFromGarbage(itemName: string)
     end
 end
 
+--========================================================
+-- PRIVATE METHODS
+--========================================================
+
+--[[
+    Resets the service for testing purposes.
+    WARNING: This will clear all tracked items and the Garbage folder.
+]]
+function GarbageItemService._resetForTests()
+    for k in pairs(tracked) do tracked[k] = nil end
+    GarbageFolder = nil
+end
+
 return GarbageItemService
