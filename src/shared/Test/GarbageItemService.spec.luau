@@ -2,10 +2,9 @@
 
 return function()
     local ReplicatedStorage = game:GetService("ReplicatedStorage")
-    local GarbageItemService = require(ReplicatedStorage.Shared.GarbageItemService)
+    local GarbageItemService
 
     describe("GarbageItemService", function()
-        local GarbageItemService
         beforeEach(function()
             -- Nettoyer ReplicatedStorage et Garbage avant chaque test
             if ReplicatedStorage:FindFirstChild("Garbage") then
