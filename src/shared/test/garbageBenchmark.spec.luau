@@ -6,7 +6,7 @@ return function()
 
     describe("Benchmark GarbageItemService vs Destroy", function()
         beforeAll(function()
-            -- Préparer Garbage folder propre
+            -- Réinitialiser Garbage
             if ReplicatedStorage:FindFirstChild("Garbage") then
                 ReplicatedStorage.Garbage:Destroy()
             end
@@ -14,7 +14,7 @@ return function()
             folder.Name = "Garbage"
             folder.Parent = ReplicatedStorage
 
-            -- Préparer un objet de base pour clonage
+            -- Base Part pour clonage
             local base = Instance.new("Part")
             base.Name = "RainDrop"
             base.Anchored = true
@@ -38,7 +38,7 @@ return function()
             print("[Destroy direct]", ITERATIONS, "ops in", duration, "sec")
         end)
 
-        it("benchmark GarbageItemService", function()
+        it("benchmark GarbageItemService AddInGarbage (sans timeLimit)", function()
             local start = os.clock()
 
             for i = 1, ITERATIONS do
@@ -49,7 +49,42 @@ return function()
             end
 
             local duration = os.clock() - start
-            print("[GarbageItemService]", ITERATIONS, "ops in", duration, "sec")
+            print("[GarbageItemService - AddInGarbage]", ITERATIONS, "ops in", duration, "sec")
+        end)
+
+        it("benchmark GarbageItemService AddInGarbage (avec timeLimit)", function()
+            local start = os.clock()
+
+            for i = 1, ITERATIONS do
+                local drop = GarbageItemService.Clone("RainDrop")
+                drop.Position = Vector3.new(0, 100, 0)
+                drop.Parent = workspace
+                -- Suppression auto après 0.01s
+                GarbageItemService.AddInGarbage(drop, 0.01)
+            end
+
+            local duration = os.clock() - start
+            print("[GarbageItemService - AddInGarbage + timeLimit]", ITERATIONS, "ops in", duration, "sec")
+        end)
+
+        it("benchmark GarbageItemService Clone réutilisation", function()
+            -- On envoie des objets dans Garbage d’abord
+            for i = 1, 100 do
+                local drop = GarbageItemService.Clone("RainDrop")
+                drop.Parent = ReplicatedStorage.Garbage
+            end
+
+            local start = os.clock()
+
+            for i = 1, ITERATIONS do
+                local drop = GarbageItemService.Clone("RainDrop")
+                drop.Position = Vector3.new(0, 100, 0)
+                drop.Parent = workspace
+                GarbageItemService.AddInGarbage(drop)
+            end
+
+            local duration = os.clock() - start
+            print("[GarbageItemService - Réutilisation depuis Garbage]", ITERATIONS, "ops in", duration, "sec")
         end)
     end)
 end
