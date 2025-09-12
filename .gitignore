@@ -21,6 +21,9 @@ out/
 # Useless toml
 selene.toml
 
+# Useless yaml
+testez.yml
+
 # Lock files
 /*.lock
 /*.rbxl.lock

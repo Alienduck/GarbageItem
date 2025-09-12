@@ -46,7 +46,7 @@ end 
 
 ### 2. `AddInGarbage(item: Instance)`  
 
-- Déplace un objet dans le dossier Garbage.
+- Déplacer un objet dans le dossier `Garbage`.
 
 - Utile pour stocker un objet inutilisé sans le détruire.
 
@@ -61,7 +61,7 @@ GarbageItemService.AddInGarbage(rainDrop)
 
 ### 3. `RemoveFromGarbage(itemName: string)`
 
-- Supprime définitivement tous les objets ayant ce nom dans le dossier Garbage.  
+- Supprime définitivement tous les objets ayant ce nom dans le dossier `Garbage`.
 
 ✅ Exemple :
 
@@ -93,25 +93,25 @@ raindDrop.Touched:Once(function (hit: BasePart)
 
 Pour des balles tirées par une arme :
 
-1. Clone la balle quand le joueur tire.
+1. Cloner la balle quand le joueur tire.
 
-2. Déplace-la dans Garbage après l’impact ou après un délai.
+2. Déplacer dans `Garbage` après l’impact ou après un délai.
 
-3. Nettoie régulièrement les balles inutiles avec RemoveFromGarbage.
+3. Nettoyer régulièrement les balles inutiles avec RemoveFromGarbage ou ajouter un délai.
 
 #### ✨ Effets spéciaux
 
 Pour des particules ou des effets visuels temporaires :
 
-1. Clone l’effet depuis ReplicatedStorage.
+1. Cloner l’effet depuis ReplicatedStorage ou un dossier donner (nouveau second paramètre obsolète).
 
-2. Ajoute-le au workspace.  
+2. Ajouter au workspace.  
 
-3. Après sa durée de vie, mets-le dans Garbage ou détruis-le.
+3. Après sa durée de vie, placer dans `Garbage` ou détruire.
 
 #### 📂 Organisation
 
-  Le service crée automatiquement un dossier Garbage dans ReplicatedStorage :
+  Le service crée automatiquement un dossier `Garbage` dans ReplicatedStorage :
 
 ```css
 ReplicatedStorage
