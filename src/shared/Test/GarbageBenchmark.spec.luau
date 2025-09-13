@@ -2,7 +2,6 @@
 
 return function()
     local ReplicatedStorage = game:GetService("ReplicatedStorage")
-    local GarbageItemService = require(ReplicatedStorage.Shared.GarbageItemService)
 
     describe("Benchmark GarbageItemService vs Destroy", function()
         beforeAll(function()
@@ -14,12 +13,16 @@ return function()
             folder.Name = "Garbage"
             folder.Parent = ReplicatedStorage
 
+            local itemsFolder = Instance.new("Folder")
+            itemsFolder.Name = "Items"
+            itemsFolder.Parent = ReplicatedStorage
+
             -- Base Part pour clonage
             local base = Instance.new("Part")
             base.Name = "RainDrop"
             base.Anchored = true
             base.Size = Vector3.new(1,1,1)
-            base.Parent = ReplicatedStorage
+            base.Parent = itemsFolder
         end)
 
         local GarbageItemService
@@ -34,9 +37,10 @@ return function()
 
         it("benchmark Destroy direct", function()
             local start = os.clock()
+            local itemsFolder = ReplicatedStorage:FindFirstChild("Items")
 
             for i = 1, ITERATIONS do
-                local drop = ReplicatedStorage.RainDrop:Clone()
+                local drop = itemsFolder.RainDrop:Clone()
                 drop.Position = Vector3.new(0, 100, 0)
                 drop.Parent = workspace
                 drop:Destroy()
@@ -48,9 +52,13 @@ return function()
 
         it("benchmark GarbageItemService AddInGarbage (sans timeLimit)", function()
             local start = os.clock()
+            local itemsFolder = ReplicatedStorage:FindFirstChild("Items")
+            if not itemsFolder then
+                error("Items folder not found in ReplicatedStorage")
+            end
 
             for i = 1, ITERATIONS do
-                local drop = GarbageItemService.Clone("RainDrop")
+                local drop = GarbageItemService.Clone("RainDrop", itemsFolder)
                 drop.Position = Vector3.new(0, 100, 0)
                 drop.Parent = workspace
                 GarbageItemService.AddInGarbage(drop)
@@ -62,9 +70,13 @@ return function()
 
         it("benchmark GarbageItemService AddInGarbage (avec timeLimit)", function()
             local start = os.clock()
+            local itemsFolder = ReplicatedStorage:FindFirstChild("Items")
+            if not itemsFolder then
+                error("Items folder not found in ReplicatedStorage")
+            end
 
             for i = 1, ITERATIONS do
-                local drop = GarbageItemService.Clone("RainDrop")
+                local drop = GarbageItemService.Clone("RainDrop", itemsFolder)
                 drop.Position = Vector3.new(0, 100, 0)
                 drop.Parent = workspace
                 -- Suppression auto après 0.01s
@@ -77,15 +89,19 @@ return function()
 
         it("benchmark GarbageItemService Clone réutilisation", function()
             -- On envoie des objets dans Garbage d’abord
+            local itemsFolder = ReplicatedStorage:FindFirstChild("Items")
             for i = 1, 100 do
-                local drop = GarbageItemService.Clone("RainDrop")
+                local drop = GarbageItemService.Clone("RainDrop", itemsFolder)
                 drop.Parent = ReplicatedStorage.Garbage
             end
 
             local start = os.clock()
+            if not itemsFolder then
+                error("Items folder not found in ReplicatedStorage")
+            end
 
             for i = 1, ITERATIONS do
-                local drop = GarbageItemService.Clone("RainDrop")
+                local drop = GarbageItemService.Clone("RainDrop", itemsFolder)
                 drop.Position = Vector3.new(0, 100, 0)
                 drop.Parent = workspace
                 GarbageItemService.AddInGarbage(drop)
