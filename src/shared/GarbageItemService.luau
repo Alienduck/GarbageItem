@@ -109,7 +109,7 @@ function GarbageItemService.Clone(itemName: string, itemsFolder: Folder?): Insta
     local gf = getGarbageFolder()
     local itemsInstance: Instance? = gf:FindFirstChild(itemName)
     if not itemsInstance then
-        itemsInstance = itemsFolder and itemsFolder:FindFirstChild(itemName) or ReplicatedStorage:FindFirstChild(itemName)
+        itemsInstance = itemsFolder and itemsFolder:FindFirstChild(itemName) or gf:FindFirstChild(itemName)
         if itemsInstance then
             return itemsInstance:Clone()
         end
